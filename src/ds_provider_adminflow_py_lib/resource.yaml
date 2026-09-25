@@ -1,0 +1,17 @@
+package-name: adminflow
+name: adminflow
+description: AdminFlow provider for the DS Business Workflow
+
+linked_service:
+  - name: adminflow
+    type: ds.resource.linked-service.adminflow
+    version: 1.0.0
+    description: AdminFlow linked service
+    class_name: ds_provider_adminflow_py_lib.linked_service.adminflow.AdminflowLinkedService
+
+dataset:
+  - name: adminflow
+    type: ds.resource.dataset.adminflow
+    version: 1.0.0
+    description: AdminFlow dataset
+    class_name: ds_provider_adminflow_py_lib.dataset.adminflow.AdminflowDataset

@@ -1,0 +1,31 @@
+{
+  "path": "clients/detailed/",
+  "pagination": "async_offset",
+  "order_by": "created_date",
+  "limit": 100,
+  "deserializer": {
+    "kwargs": {
+      "record_path": [
+        "projects"
+      ],
+      "meta": [
+        "id"
+      ],
+      "meta_prefix": "client_"
+    }
+  },
+  "dtypes": {
+    "id": "string",
+    "name": "string",
+    "archived": "boolean",
+    "type_id": "string",
+    "type_value": "string",
+    "type_type": "string",
+    "type_display_name": "string",
+    "type_editable": "boolean",
+    "leader": "string",
+    "start_date": "datetime64[ns, UTC]",
+    "end_date": "datetime64[ns, UTC]",
+    "has_access": "boolean"
+  }
+}
