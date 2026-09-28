@@ -53,8 +53,9 @@ def load_read_spec(product: AdminflowProduct) -> ReadSpec:
 
     Raises:
         ValidationError: If the metadata file is missing, isn't valid JSON,
-            or exists but is missing a required key (``path``, ``pagination``)
-            or ``pagination`` is not a recognized
+            or exists but is missing a required key (``path``, ``pagination``),
+            isn't itself a JSON object, has a non-object ``deserializer``, or
+            ``pagination`` is not a recognized
             :class:`~ds_provider_adminflow_py_lib.enums.PaginationKind` value.
     """
     try:
@@ -74,7 +75,7 @@ def load_read_spec(product: AdminflowProduct) -> ReadSpec:
             deserializer_kwargs={"sep": "_", **payload.get("deserializer", {}).get("kwargs", {})},
             dtypes=payload.get("dtypes", {}),
         )
-    except (KeyError, ValueError) as exc:
+    except (KeyError, ValueError, TypeError, AttributeError) as exc:
         raise ValidationError(
             message=f"Invalid read metadata for AdminFlow product '{product.value}': {exc}",
             details={"product": product.value, "operation": OperationType.READ.value},

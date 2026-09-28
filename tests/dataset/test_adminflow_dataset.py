@@ -416,6 +416,26 @@ def test_fetch_self_declarations_skips_a_failed_id_and_keeps_the_rest():
     assert resolved == [{"id": "sd2"}]
 
 
+def test_fetch_self_declarations_propagates_authentication_error_instead_of_skipping():
+    """An AuthenticationError during a per-id lookup must propagate, not be swallowed as a per-id failure."""
+    responses = [AuthenticationError(message="Authentication error: 401", details={})]
+    dataset = make_dataset(responses)
+    detailed_page = [{"last_self_declaration": {"id": "sd1"}}]
+
+    with pytest.raises(AuthenticationError):
+        dataset._fetch_self_declarations(detailed_page)
+
+
+def test_fetch_self_declarations_propagates_connection_error_instead_of_skipping():
+    """A ConnectionError during a per-id lookup must propagate, not be swallowed as a per-id failure."""
+    responses = [ConnectionError(message="network down", details={})]
+    dataset = make_dataset(responses)
+    detailed_page = [{"last_self_declaration": {"id": "sd1"}}]
+
+    with pytest.raises(ConnectionError):
+        dataset._fetch_self_declarations(detailed_page)
+
+
 def test_fetch_self_declarations_skips_records_without_a_last_self_declaration():
     """Records with no last_self_declaration, or none with an id, are skipped -- no GET issued for them."""
     dataset = make_dataset([])

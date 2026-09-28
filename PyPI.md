@@ -26,32 +26,53 @@ print(f"ds-provider-adminflow-py-lib version: {__version__}")
 
 ## Features
 
-<!-- List your package features here -->
-- Feature 1: Description of feature 1
-- Feature 2: Description of feature 2
-- Feature 3: Description of feature 3
+- Read-only `Dataset`/`LinkedService` provider for the AdminFlow
+  accounting-firm API (`api.adminflow.no/api/accflow`), following the same
+  `ds-resource-plugin-py-lib` contract as every other `ds-provider-*` package.
+- Static per-tenant bearer token authentication -- no token-exchange/refresh
+  flow required.
+- A packaged product catalog (13 products, including `clients`,
+  `accountants`, `firmCurrent`, `clientsDetailed`/`projectsDetailed` and
+  their exploded sub-tables, and `selfDeclaration`) with offset, async-offset
+  (202 + `Location` polling), and single-object pagination all handled
+  automatically.
+- Support for reading a custom (non-packaged) endpoint directly via
+  `settings.read.path`/`pagination` when a product isn't in the catalog.
+- Results are returned as pandas DataFrames via the standard `Dataset`
+  contract (`dataset.read()` populates `dataset.output`).
 
 ## Usage
 
-<!-- Add usage examples here -->
-
 ```python
-# Example usage
-import ds_provider_adminflow_py_lib
+from ds_provider_adminflow_py_lib.dataset.adminflow import (
+    AdminflowDataset,
+    AdminflowDatasetSettings,
+)
+from ds_provider_adminflow_py_lib.enums import AdminflowProduct
+from ds_provider_adminflow_py_lib.linked_service.adminflow import (
+    AdminflowLinkedService,
+    AdminflowLinkedServiceSettings,
+)
 
-# Your code examples here
+linked_service = AdminflowLinkedService(
+    settings=AdminflowLinkedServiceSettings(token="my-bearer-token"),
+)
+dataset = AdminflowDataset(
+    settings=AdminflowDatasetSettings(product=AdminflowProduct.CLIENTS),
+    linked_service=linked_service,
+)
+
+linked_service.connect()
+dataset.read()
+data = dataset.output  # pandas.DataFrame
 ```
 
 ## Requirements
 
-- Python 3.9 or higher
-- <!-- List any required dependencies -->
-
-## Optional Dependencies
-
-<!-- List optional dependencies if any -->
-- Optional dependency 1: Description
-- Optional dependency 2: Description
+- Python 3.11 or higher
+- `ds-resource-plugin-py-lib`, `ds-common-logger-py-lib`,
+  `ds-common-serde-py-lib`, `ds-protocol-http-py-lib`, `pandas` -- installed
+  automatically as dependencies.
 
 ## Documentation
 

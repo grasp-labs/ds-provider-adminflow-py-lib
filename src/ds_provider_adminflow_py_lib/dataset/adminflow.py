@@ -436,6 +436,11 @@ class AdminflowDataset(
                 may be fewer than ``len(detailed_page)``, or empty. Callers
                 must advance the pagination offset by ``len(detailed_page)``,
                 never by this return value's length.
+
+        Raises:
+            AuthenticationError: If authentication fails.
+            AuthorizationError: If authorization fails.
+            ConnectionError: If the transport cannot reach AdminFlow.
         """
         self_declaration_ids = [
             self_declaration_id
@@ -449,6 +454,12 @@ class AdminflowDataset(
             url = self._build_url(f"self-declaration/{self_declaration_id}")
             try:
                 response = self.linked_service.connection.get(url=url)
+            except (AuthenticationError, AuthorizationError, ConnectionError):
+                # Already ResourceException subclasses -- re-raise as themselves,
+                # ahead of the broader `except ResourceException` below. A transport
+                # or auth failure isn't an ordinary per-id lookup failure; it must
+                # propagate per read()'s contract, not be swallowed as partial data.
+                raise
             except ResourceException as exc:
                 logger.error("Error fetching self declaration %s: %s", self_declaration_id, exc)
                 continue

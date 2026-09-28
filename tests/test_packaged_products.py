@@ -240,3 +240,38 @@ def test_load_read_spec_raises_on_unrecognized_pagination_kind(monkeypatch):
     )
     with pytest.raises(ValidationError):
         load_read_spec(AdminflowProduct.CLIENTS)
+
+
+def test_load_read_spec_raises_on_non_object_payload(monkeypatch):
+    """Valid JSON that isn't a JSON object (e.g. a list) raises ValidationError, not a raw TypeError."""
+    monkeypatch.setattr(
+        "ds_provider_adminflow_py_lib.packaged_products._load_metadata",
+        lambda product, operation: ["not", "a", "dict"],
+    )
+    with pytest.raises(ValidationError) as exc_info:
+        load_read_spec(AdminflowProduct.CLIENTS)
+    assert "clients" in exc_info.value.message
+
+
+def test_load_read_spec_raises_on_non_object_deserializer(monkeypatch):
+    """A non-object deserializer key raises ValidationError, not a raw AttributeError."""
+    payload = {"path": "clients/", "pagination": "offset", "deserializer": "not-an-object"}
+    monkeypatch.setattr(
+        "ds_provider_adminflow_py_lib.packaged_products._load_metadata",
+        lambda product, operation: payload,
+    )
+    with pytest.raises(ValidationError) as exc_info:
+        load_read_spec(AdminflowProduct.CLIENTS)
+    assert "clients" in exc_info.value.message
+
+
+def test_load_read_spec_raises_on_unhashable_pagination_value(monkeypatch):
+    """An unhashable pagination value (e.g. a list) raises ValidationError, not a raw TypeError."""
+    payload = {"path": "clients/", "pagination": ["offset"]}
+    monkeypatch.setattr(
+        "ds_provider_adminflow_py_lib.packaged_products._load_metadata",
+        lambda product, operation: payload,
+    )
+    with pytest.raises(ValidationError) as exc_info:
+        load_read_spec(AdminflowProduct.CLIENTS)
+    assert "clients" in exc_info.value.message
