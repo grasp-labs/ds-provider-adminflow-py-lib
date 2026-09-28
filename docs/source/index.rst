@@ -1,5 +1,5 @@
 Welcome to ds-provider-adminflow-py-lib's documentation!
-=============================================
+=========================================================
 
 .. toctree::
    :maxdepth: 2
