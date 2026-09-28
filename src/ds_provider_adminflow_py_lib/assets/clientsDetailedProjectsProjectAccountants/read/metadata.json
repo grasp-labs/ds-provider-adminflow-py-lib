@@ -1,0 +1,36 @@
+{
+  "path": "clients/detailed/",
+  "pagination": "async_offset",
+  "order_by": "created_date",
+  "limit": 100,
+  "deserializer": {
+    "kwargs": {
+      "record_path": [
+        "projects",
+        "project_accountants"
+      ],
+      "meta": [
+        "id",
+        [
+          "projects",
+          "id"
+        ]
+      ],
+      "meta_prefix": "client_"
+    }
+  },
+  "dtypes": {
+    "id": "string",
+    "client_id": "string",
+    "client_projects_id": "string",
+    "accountant_id": "string",
+    "accountant_name": "string",
+    "accountant_avatar": "string",
+    "accountant_user_id": "string",
+    "role_id": "string",
+    "role_name": "string",
+    "is_visible_in_client_portal": "boolean",
+    "team": "string",
+    "delete_scheduled": "string"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "path": "projects/detailed/",
+  "pagination": "async_offset",
+  "order_by": "created_date",
+  "limit": 100,
+  "deserializer": {
+    "kwargs": {
+      "record_path": [
+        "project_persons"
+      ],
+      "meta": [
+        "id"
+      ],
+      "meta_prefix": "project_"
+    }
+  },
+  "dtypes": {
+    "id": "string",
+    "project_id": "string",
+    "has_access": "boolean",
+    "is_main": "boolean",
+    "notify": "boolean",
+    "last_access": "datetime64[ns, UTC]",
+    "name": "string",
+    "email": "string",
+    "phone": "string",
+    "contact_person_roles": "object",
+    "note": "string",
+    "user_id": "string"
+  }
+}

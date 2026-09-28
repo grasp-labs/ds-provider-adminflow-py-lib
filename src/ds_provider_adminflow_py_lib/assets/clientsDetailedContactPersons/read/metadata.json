@@ -1,0 +1,28 @@
+{
+  "path": "clients/detailed/",
+  "pagination": "async_offset",
+  "order_by": "created_date",
+  "limit": 100,
+  "deserializer": {
+    "kwargs": {
+      "record_path": [
+        "contact_persons"
+      ],
+      "meta": [
+        "id"
+      ],
+      "meta_prefix": "client_"
+    }
+  },
+  "dtypes": {
+    "id": "string",
+    "client_id": "string",
+    "name": "string",
+    "email": "string",
+    "phone": "string",
+    "roles": "object",
+    "is_main": "boolean",
+    "note": "string",
+    "user_id": "string"
+  }
+}
