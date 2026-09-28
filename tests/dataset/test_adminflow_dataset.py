@@ -270,7 +270,7 @@ def test_read_async_offset_uses_response_directly_when_not_202():
 
 
 def test_read_async_offset_resolves_202_then_reads_page(monkeypatch):
-    """A 202 page is polled at its Location URL (joined against the request's own origin) until resolved."""
+    """A 202 page is polled at its Location URL (resolved against the request URL) until resolved."""
     sleep_calls: list[float] = []
     monkeypatch.setattr(adminflow_mod.time, "sleep", sleep_calls.append)
     responses = [
@@ -287,6 +287,27 @@ def test_read_async_offset_resolves_202_then_reads_page(monkeypatch):
     assert requests[1]["url"] == "https://api.adminflow.no/jobs/abc"
     # The first poll resolves immediately (non-202) -- no sleep needed at all.
     assert sleep_calls == []
+
+
+def test_read_async_offset_resolves_absolute_url_in_location_header(monkeypatch):
+    """A Location header that is itself a full URL is used as-is, not doubled with the request's own origin."""
+    sleep_calls: list[float] = []
+    monkeypatch.setattr(adminflow_mod.time, "sleep", sleep_calls.append)
+    responses = [
+        FakeResponse(
+            {},
+            status_code=202,
+            headers={"Location": "https://api.adminflow.no/api/accflow/jobs/abc"},
+        ),
+        FakeResponse({"results": [{"id": "1"}]}),
+        FakeResponse({"results": []}),
+    ]
+    dataset = make_dataset(responses, product=AdminflowProduct.CLIENTS_DETAILED)
+    dataset.read()
+
+    requests = dataset.linked_service.connection.requests
+    assert len(dataset.output) == 1
+    assert requests[1]["url"] == "https://api.adminflow.no/api/accflow/jobs/abc"
 
 
 def test_read_async_offset_polls_with_exponential_backoff(monkeypatch):

@@ -23,7 +23,7 @@ Example:
 import time
 from dataclasses import dataclass, field, replace
 from typing import Any, Generic, NoReturn, TypeVar
-from urllib.parse import urlsplit
+from urllib.parse import urljoin
 
 import pandas as pd
 from ds_common_logger_py_lib import Logger
@@ -472,8 +472,8 @@ class AdminflowDataset(
 
         Args:
             response: The initial page response, possibly ``202``.
-            request_url: The URL that produced ``response`` -- only its
-                scheme/host are used, to join with ``Location``.
+            request_url: The URL that produced ``response`` -- resolved
+                against ``Location``.
 
         Returns:
             Any: The resolved response's parsed JSON body.
@@ -484,8 +484,7 @@ class AdminflowDataset(
         if response.status_code != 202:
             return response.json()
 
-        origin = urlsplit(request_url)
-        location_url = f"{origin.scheme}://{origin.netloc}{response.headers['Location']}"
+        location_url = urljoin(request_url, response.headers["Location"])
         interval = POLL_INITIAL_INTERVAL_SECONDS
         started_at = time.monotonic()
 
